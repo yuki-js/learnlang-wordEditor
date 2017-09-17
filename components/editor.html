@@ -1,0 +1,40 @@
+<div id="editor">
+  <a class="btn btn-primary" href="#" @click="open">Open File</a>
+  <input id="fileOpener" type="file" ref="file"/>
+  <a class="btn btn-secondary" href="#" @click="pastingJson=!pastingJson">Paste JSON</a>
+  <a class="btn btn-success" href="#" @click="saveJson=!saveJson">Save file</a>
+
+  <div id="pasteJson" v-show="pastingArea">
+    <textarea placeholder="Paste here" v-model="jsonArea"></textarea>
+    <a class="btn btn-success" href="#" @click="loadPastedJson">Load</a>
+  </div>
+  <div id="save" v-show="saveJson">
+    <textarea disabled="disabled" :value="jsonFile"></textarea>
+    <a class="btn btn-info" :href="'data:application/json,'+jsonFile" download="LearnLangWords.json">Save</a>
+  </div>
+  <div id="editInfo">
+    <label for="name">リスト名</label><input id="name" type="text" v-model="json.name" placeholder="リスト名を入力してください"/>
+    <label for="name">作者</label><input id="name" type="text" v-model="json.author" placeholder="作者名を入力してください"/>
+    <br/><label for="description">説明</label><textarea id="description" v-model="json.description" placeholder="説明文"></textarea>
+    
+    
+  </div>
+  <div id="editQuestion">
+    <div class="question" v-for="item in json.questions">
+      <div class="questionText">
+        問題文<input type="text" v-model="item.question"/>
+      </div>
+      <div class="answers">
+        解答 <span class="answer" v-for="(ans,ind) in item.answer"><input type="text" v-model="item.answer[ind]"/></span><a class="btn btn-primary" href="#" @click="addAnswer(item.answer)">解答を追加</a>
+      </div>
+    </div>
+    <a class="btn btn-info" href="#" @click="addQuestion">問題追加</a>
+  </div>
+  <div class="jumbotron">
+    問題文にて<br>
+    Ctrl+Shift+5 で太字開始&lt;bold&gt;<br>
+    Ctrl+Shift+6 で太字終了&lt;/bold&gt;<br>
+    キーバインドで太字制御できます。
+    詳しくはhttps://github.com/avgjs/pixi-richtext
+  </div>
+</div>
