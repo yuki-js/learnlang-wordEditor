@@ -1,0 +1,16 @@
+<div id="printWord">
+  <a href="#" @click.prevent="$emit('close')">編集に戻る</a>
+  <h1>{{json.name}}</h1>
+  <h4>{{json.author}}</h4>
+  <div class="alert alert-light" role="alert">{{json.description}}</div>
+  <table class="table">
+    <tr>
+      <th>問題</th>
+      <th>答え</th>
+    </tr>
+    <tr v-for="i in indexes">
+      <td v-html="tag(json.questions[i[0]].question)"></td>
+      <td v-html="tag(json.questions[i[0]].answer[0])"></td>
+    </tr>
+  </table>
+</div>

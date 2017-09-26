@@ -8,7 +8,8 @@
   </head>
   <body>
     <div id="app">
-      <editor></editor>
+      <editor v-show="!printWord" :json="json" @open-print-word="printWord=true"></editor>
+      <print-word v-if="printWord" :json="json" @close="printWord=false"></print-word>
     </div>
     <script src="dist/dist.js"></script>
   </body>

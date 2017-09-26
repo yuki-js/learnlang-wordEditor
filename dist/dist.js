@@ -1722,12 +1722,22 @@ var network = __webpack_require__(18);
 
 var vm = exports.vm = new Vue({
   el: "#app",
-  data: {},
+  data: {
+    json: {
+      questions: [],
+      name: "",
+      author: "",
+      description: "",
+      version: "2.0"
+    },
+    printWord: false
+  },
   methods: {},
   created: function created() {},
 
   components: {
-    editor: __webpack_require__(43)
+    editor: __webpack_require__(43),
+    printWord: __webpack_require__(45)
   }
 
 });
@@ -11962,7 +11972,7 @@ exports = module.exports = __webpack_require__(15)(undefined);
 
 
 // module
-exports.push([module.i, "a {\n  color: #0033dd;\n  text-decoration: none; }\n  a:link {\n    text-decoration: none; }\n\nhtml, body, #wrap, #app {\n  width: 100%;\n  height: 100%; }\n\ntextarea {\n  display: block;\n  width: 70%;\n  margin: 10px; }\n\n#fileOpener {\n  display: none; }\n", ""]);
+exports.push([module.i, "a {\n  color: #0033dd;\n  text-decoration: none; }\n  a:link {\n    text-decoration: none; }\n\nhtml, body, #wrap, #app {\n  width: 100%;\n  height: 100%; }\n\ntextarea {\n  display: block;\n  width: 70%;\n  margin: 10px; }\n\n#fileOpener {\n  display: none; }\n\n#printWord table td {\n  color: #f00; }\n", ""]);
 
 // exports
 
@@ -15964,22 +15974,23 @@ if (true) {
 module.exports = __webpack_require__(44)({
   data: function data() {
     return {
-      json: {
-        questions: [],
-        name: "",
-        author: "",
-        description: "",
-        version: "2.0"
-      },
+
       pastingJson: false,
       jsonArea: "",
-      saveJson: false
+      saveJson: false,
+      doubleTouch: false
     };
   },
 
+  props: ["json"],
   methods: {
     loadPastedJson: function loadPastedJson() {
-      this.json = JSON.parse(this.jsonArea);
+      var parsed = JSON.parse(this.jsonArea);
+      this.json.name = parsed.name;
+      this.json.author = parsed.author;
+      this.json.description = parsed.description;
+      this.json.questions = parsed.questions;
+      this.attachEvt();
       this.pastingJson = false;
     },
     open: function open() {
@@ -15989,16 +16000,18 @@ module.exports = __webpack_require__(44)({
       elm.addEventListener("change", function (e) {
         var fr = new window.FileReader();
         fr.onload = function (file) {
-          _this.json = JSON.parse(file.target.result);
+          var parsed = JSON.parse(file.target.result);
+          _this.json.name = parsed.name;
+          _this.json.author = parsed.author;
+          _this.json.description = parsed.description;
+          _this.json.questions = parsed.questions;
+          _this.attachEvt();
         };
         fr.readAsText(e.target.files[0]);
       });
       var evt = document.createEvent("MouseEvents");
       evt.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, elm);
       elm.dispatchEvent(evt);
-    },
-    save: function save() {
-      console.log(JSON.stringify(this.json));
     },
     addQuestion: function addQuestion() {
       this.json.questions.push({
@@ -16021,11 +16034,18 @@ module.exports = __webpack_require__(44)({
           _this2.inputs[i].addEventListener("keyup", function (e) {
 
             if (e.keyCode == 13 || e.ctrlKey && e.keyCode == 74) {
-              _this2.inputs[i].blur();
-              if (i < _this2.inputs.length - 1) {
-                _this2.inputs[i + 1].focus();
-                return;
+              if (_this2.doubleTouch) {
+                _this2.doubleTouch = false;
+                _this2.inputs[i].blur();
+                if (i < _this2.inputs.length - 1) {
+                  _this2.inputs[i + 1].focus();
+                  return;
+                }
+              } else {
+                _this2.doubleTouch = true;
               }
+            } else {
+              _this2.doubleTouch = false;
             }
             if (e.keyCode == 53 && e.ctrlKey && e.shiftKey) {
               //C-%
@@ -16037,6 +16057,11 @@ module.exports = __webpack_require__(44)({
               _this2.inputs[i].value += "</bold>";
               return;
             }
+            if (e.keyCode == 82 && e.ctrlKey && e.shiftKey) {
+              //C-R
+              _this2.addQuestion();
+              return;
+            }
           });
         };
 
@@ -16044,14 +16069,27 @@ module.exports = __webpack_require__(44)({
           _loop(i);
         }
       }, 300);
+    },
+    openPrintWord: function openPrintWord() {
+      this.$emit("open-print-word", this.json);
     }
   },
   computed: {
     jsonFile: function jsonFile() {
-      return JSON.stringify(this.json);
+      var sjon = JSON.stringify(this.json);
+      localStorage.autoSave = sjon;
+      return sjon;
     }
   },
+
   mounted: function mounted() {
+    var parsed = JSON.stringify(localStorage.autoSave);
+    if (parsed && parsed.name) {
+      this.json.name = parsed.name;
+      this.json.author = parsed.author;
+      this.json.description = parsed.description;
+      this.json.questions = parsed.questions;
+    }
     this.attachEvt();
   }
 });
@@ -16060,8 +16098,8 @@ module.exports = __webpack_require__(44)({
 /* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var render = function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{attrs:{"id":"editor"}},[_c('a',{staticClass:"btn btn-primary",attrs:{"href":"#"},on:{"click":_vm.open}},[_vm._v("Open File")]),_vm._v(" "),_c('input',{ref:"file",attrs:{"id":"fileOpener","type":"file"}}),_vm._v(" "),_c('a',{staticClass:"btn btn-secondary",attrs:{"href":"#"},on:{"click":function($event){_vm.pastingJson=!_vm.pastingJson}}},[_vm._v("Paste JSON")]),_vm._v(" "),_c('a',{staticClass:"btn btn-success",attrs:{"href":"#"},on:{"click":function($event){_vm.saveJson=!_vm.saveJson}}},[_vm._v("Save file")]),_vm._v(" "),_c('div',{directives:[{name:"show",rawName:"v-show",value:(_vm.pastingArea),expression:"pastingArea"}],attrs:{"id":"pasteJson"}},[_c('textarea',{directives:[{name:"model",rawName:"v-model",value:(_vm.jsonArea),expression:"jsonArea"}],attrs:{"placeholder":"Paste here"},domProps:{"value":(_vm.jsonArea)},on:{"input":function($event){if($event.target.composing){ return; }_vm.jsonArea=$event.target.value}}}),_vm._v(" "),_c('a',{staticClass:"btn btn-success",attrs:{"href":"#"},on:{"click":_vm.loadPastedJson}},[_vm._v("Load")])]),_vm._v(" "),_c('div',{directives:[{name:"show",rawName:"v-show",value:(_vm.saveJson),expression:"saveJson"}],attrs:{"id":"save"}},[_c('textarea',{attrs:{"disabled":"disabled"},domProps:{"value":_vm.jsonFile}}),_vm._v(" "),_c('a',{staticClass:"btn btn-info",attrs:{"href":'data:application/json,'+_vm.jsonFile,"download":"LearnLangWords.json"}},[_vm._v("Save")])]),_vm._v(" "),_c('div',{attrs:{"id":"editInfo"}},[_c('label',{attrs:{"for":"name"}},[_vm._v("リスト名")]),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.json.name),expression:"json.name"}],attrs:{"id":"name","type":"text","placeholder":"リスト名を入力してください"},domProps:{"value":(_vm.json.name)},on:{"input":function($event){if($event.target.composing){ return; }_vm.json.name=$event.target.value}}}),_vm._v(" "),_c('label',{attrs:{"for":"name"}},[_vm._v("作者")]),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.json.author),expression:"json.author"}],attrs:{"id":"name","type":"text","placeholder":"作者名を入力してください"},domProps:{"value":(_vm.json.author)},on:{"input":function($event){if($event.target.composing){ return; }_vm.json.author=$event.target.value}}}),_vm._v(" "),_c('br'),_c('label',{attrs:{"for":"description"}},[_vm._v("説明")]),_c('textarea',{directives:[{name:"model",rawName:"v-model",value:(_vm.json.description),expression:"json.description"}],attrs:{"id":"description","placeholder":"説明文"},domProps:{"value":(_vm.json.description)},on:{"input":function($event){if($event.target.composing){ return; }_vm.json.description=$event.target.value}}})]),_vm._v(" "),_c('div',{attrs:{"id":"editQuestion"}},[_vm._l((_vm.json.questions),function(item){return _c('div',{staticClass:"question"},[_c('div',{staticClass:"questionText"},[_vm._v("\n        問題文"),_c('input',{directives:[{name:"model",rawName:"v-model",value:(item.question),expression:"item.question"}],attrs:{"type":"text"},domProps:{"value":(item.question)},on:{"input":function($event){if($event.target.composing){ return; }item.question=$event.target.value}}})]),_vm._v(" "),_c('div',{staticClass:"answers"},[_vm._v("\n        解答 "),_vm._l((item.answer),function(ans,ind){return _c('span',{staticClass:"answer"},[_c('input',{directives:[{name:"model",rawName:"v-model",value:(item.answer[ind]),expression:"item.answer[ind]"}],attrs:{"type":"text"},domProps:{"value":(item.answer[ind])},on:{"input":function($event){if($event.target.composing){ return; }_vm.$set(item.answer, ind, $event.target.value)}}})])}),_c('a',{staticClass:"btn btn-primary",attrs:{"href":"#"},on:{"click":function($event){_vm.addAnswer(item.answer)}}},[_vm._v("解答を追加")])],2)])}),_vm._v(" "),_c('a',{staticClass:"btn btn-info",attrs:{"href":"#"},on:{"click":_vm.addQuestion}},[_vm._v("問題追加")])],2),_vm._v(" "),_vm._m(0)])}
-var staticRenderFns = [function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"jumbotron"},[_vm._v("\n    問題文にて"),_c('br'),_vm._v("\n    Ctrl+Shift+5 で太字開始<bold>"),_c('br'),_vm._v("\n    Ctrl+Shift+6 で太字終了</bold>"),_c('br'),_vm._v("\n    キーバインドで太字制御できます。\n    詳しくはhttps://github.com/avgjs/pixi-richtext\n  ")])}]
+var render = function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{attrs:{"id":"editor"}},[_c('a',{staticClass:"btn btn-primary",attrs:{"href":"#"},on:{"click":_vm.open}},[_vm._v("Open File")]),_vm._v(" "),_c('input',{ref:"file",attrs:{"id":"fileOpener","type":"file"}}),_vm._v(" "),_c('a',{staticClass:"btn btn-secondary",attrs:{"href":"#"},on:{"click":function($event){_vm.pastingJson=!_vm.pastingJson}}},[_vm._v("Paste JSON")]),_vm._v(" "),_c('a',{staticClass:"btn btn-success",attrs:{"href":"#"},on:{"click":function($event){_vm.saveJson=!_vm.saveJson}}},[_vm._v("Save file")]),_vm._v(" "),_c('a',{staticClass:"btn btn-info",attrs:{"href":"#"},on:{"click":_vm.openPrintWord}},[_vm._v("Print Words")]),_vm._v(" "),_c('div',{directives:[{name:"show",rawName:"v-show",value:(_vm.pastingArea),expression:"pastingArea"}],attrs:{"id":"pasteJson"}},[_c('textarea',{directives:[{name:"model",rawName:"v-model",value:(_vm.jsonArea),expression:"jsonArea"}],attrs:{"placeholder":"Paste here"},domProps:{"value":(_vm.jsonArea)},on:{"input":function($event){if($event.target.composing){ return; }_vm.jsonArea=$event.target.value}}}),_vm._v(" "),_c('a',{staticClass:"btn btn-success",attrs:{"href":"#"},on:{"click":_vm.loadPastedJson}},[_vm._v("Load")])]),_vm._v(" "),_c('div',{directives:[{name:"show",rawName:"v-show",value:(_vm.saveJson),expression:"saveJson"}],attrs:{"id":"save"}},[_c('textarea',{attrs:{"disabled":"disabled"},domProps:{"value":_vm.jsonFile}}),_vm._v(" "),_c('a',{staticClass:"btn btn-info",attrs:{"href":'data:application/json,'+_vm.jsonFile,"download":"LearnLangWords.json"}},[_vm._v("Save")])]),_vm._v(" "),_c('div',{attrs:{"id":"editInfo"}},[_c('label',{attrs:{"for":"name"}},[_vm._v("リスト名")]),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.json.name),expression:"json.name"}],attrs:{"id":"name","type":"text","placeholder":"リスト名を入力してください"},domProps:{"value":(_vm.json.name)},on:{"input":function($event){if($event.target.composing){ return; }_vm.json.name=$event.target.value}}}),_vm._v(" "),_c('label',{attrs:{"for":"name"}},[_vm._v("作者")]),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.json.author),expression:"json.author"}],attrs:{"id":"name","type":"text","placeholder":"作者名を入力してください"},domProps:{"value":(_vm.json.author)},on:{"input":function($event){if($event.target.composing){ return; }_vm.json.author=$event.target.value}}}),_vm._v(" "),_c('br'),_c('label',{attrs:{"for":"description"}},[_vm._v("説明")]),_c('textarea',{directives:[{name:"model",rawName:"v-model",value:(_vm.json.description),expression:"json.description"}],attrs:{"id":"description","placeholder":"説明文"},domProps:{"value":(_vm.json.description)},on:{"input":function($event){if($event.target.composing){ return; }_vm.json.description=$event.target.value}}})]),_vm._v(" "),_c('div',{attrs:{"id":"editQuestion"}},[_vm._l((_vm.json.questions),function(item){return _c('div',{staticClass:"question"},[_c('div',{staticClass:"questionText"},[_vm._v("\n        問題文"),_c('input',{directives:[{name:"model",rawName:"v-model",value:(item.question),expression:"item.question"}],attrs:{"type":"text"},domProps:{"value":(item.question)},on:{"input":function($event){if($event.target.composing){ return; }item.question=$event.target.value}}})]),_vm._v(" "),_c('div',{staticClass:"answers"},[_vm._v("\n        解答 "),_vm._l((item.answer),function(ans,ind){return _c('span',{staticClass:"answer"},[_c('input',{directives:[{name:"model",rawName:"v-model",value:(item.answer[ind]),expression:"item.answer[ind]"}],attrs:{"type":"text"},domProps:{"value":(item.answer[ind])},on:{"input":function($event){if($event.target.composing){ return; }_vm.$set(item.answer, ind, $event.target.value)}}})])}),_c('a',{staticClass:"btn btn-primary",attrs:{"href":"#"},on:{"click":function($event){_vm.addAnswer(item.answer)}}},[_vm._v("解答を追加")])],2)])}),_vm._v(" "),_c('a',{staticClass:"btn btn-info",attrs:{"href":"#"},on:{"click":_vm.addQuestion}},[_vm._v("問題追加")])],2),_vm._v(" "),_vm._m(0)])}
+var staticRenderFns = [function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"jumbotron"},[_vm._v("\n    問題文にて"),_c('br'),_vm._v("\n    Ctrl+Shift+5 で太字開始<bold>"),_c('br'),_vm._v("\n    Ctrl+Shift+6 で太字終了</bold>"),_c('br'),_vm._v("\n    キーバインドで太字制御できます。\n    詳しくはhttps://github.com/avgjs/pixi-richtext"),_c('br'),_vm._v("\n    現状で、正式に対応しているものは、boldタグのみ。それ以外のものに関しては動作未確認、未実装。\n    他のものは、申し訳ありませんが、wordEditorのリポジトリにPull Request/Issueを立ち上げてください。\n    解答では太字表示にはなりません"),_c('br'),_vm._v(" "),_c('br'),_vm._v("\n    Ctrl+Shift+r で問題追加 "),_c('br'),_vm._v(" "),_c('br'),_vm._v("\n    Enter または Ctrl+j を２回押すと次の入力欄へ "),_c('br'),_vm._v(" "),_c('br'),_vm._v("\n    解答追加ボタンで解答を追加できますが、現在のバージョンでは先頭の解答のみが読み込まれ、それ以外は無視される仕様になっていますが、将来の機能更新で２つ目以降も、別解として処理される予定になっていますので、文言の違いなどによる別解があれば入力してください。 "),_c('br')])}]
 module.exports = function (_exports) {
   var options = typeof _exports === 'function'
     ? _exports.options
@@ -16081,6 +16119,74 @@ if (false) {(function () {
   module.hot.accept()
   if (module.hot.data) {
     api.rerender("data-v-21f5bf7a", { render: render, staticRenderFns: staticRenderFns })
+  }
+})()}
+
+
+/***/ }),
+/* 45 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = __webpack_require__(46)({
+  data: function data() {
+    return {
+      indexes: []
+    };
+  },
+
+  props: ["json"],
+  methods: {
+    randomize: function randomize() {
+      this.$set(this, "indexes", []);
+      for (var i = this.json.questions.length - 1; i >= 0; i--) {
+        this.indexes.push([i, Math.random()]);
+      }
+      this.indexes.sort(function (a, b) {
+        return a[1] - b[1];
+      });
+    },
+    tag: function tag(v) {
+      return v.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/&lt;bold&gt;(.*?)&lt;\/bold&gt;/g, "<b>$1</b>");
+    }
+  },
+  watch: {
+    json: function json() {
+      this.randomize();
+    }
+  },
+  mounted: function mounted() {
+    this.randomize();
+  }
+});
+
+/***/ }),
+/* 46 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{attrs:{"id":"printWord"}},[_c('a',{attrs:{"href":"#"},on:{"click":function($event){$event.preventDefault();_vm.$emit('close')}}},[_vm._v("編集に戻る")]),_vm._v(" "),_c('h1',[_vm._v(_vm._s(_vm.json.name))]),_vm._v(" "),_c('h4',[_vm._v(_vm._s(_vm.json.author))]),_vm._v(" "),_c('div',{staticClass:"alert alert-light",attrs:{"role":"alert"}},[_vm._v(_vm._s(_vm.json.description))]),_vm._v(" "),_c('table',{staticClass:"table"},[_vm._m(0),_vm._v(" "),_vm._l((_vm.indexes),function(i){return _c('tr',[_c('td',{domProps:{"innerHTML":_vm._s(_vm.tag(_vm.json.questions[i[0]].question))}}),_vm._v(" "),_c('td',{domProps:{"innerHTML":_vm._s(_vm.tag(_vm.json.questions[i[0]].answer[0]))}})])})],2)])}
+var staticRenderFns = [function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('tr',[_c('th',[_vm._v("問題")]),_vm._v(" "),_c('th',[_vm._v("答え")])])}]
+module.exports = function (_exports) {
+  var options = typeof _exports === 'function'
+    ? _exports.options
+    : _exports
+  options.render = render
+  options.staticRenderFns = staticRenderFns
+  if (false) {
+    api.createRecord("data-v-a8300598", options)
+  }
+  return _exports
+}
+var api = null
+if (false) {(function () {
+  api = require("vue-hot-reload-api")
+  api.install(require("vue"))
+  if (!api.compatible) return
+  module.hot.accept()
+  if (module.hot.data) {
+    api.rerender("data-v-a8300598", { render: render, staticRenderFns: staticRenderFns })
   }
 })()}
 

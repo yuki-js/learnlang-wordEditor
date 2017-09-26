@@ -8,7 +8,14 @@ const network = require("./network")
 const vm = exports.vm=new Vue({
   el:"#app",
   data:{
-    
+    json:{
+      questions:[],
+      name:"",
+      author:"",
+      description:"",
+      version:"2.0"
+    },
+    printWord:false
   },
   methods:{
     
@@ -17,7 +24,8 @@ const vm = exports.vm=new Vue({
     
   },
   components:{
-    editor:require("../components/editor.js")
+    editor:require("../components/editor.js"),
+    printWord:require("../components/printWord.js")
   }
 
 });

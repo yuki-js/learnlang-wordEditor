@@ -3,6 +3,7 @@
   <input id="fileOpener" type="file" ref="file"/>
   <a class="btn btn-secondary" href="#" @click="pastingJson=!pastingJson">Paste JSON</a>
   <a class="btn btn-success" href="#" @click="saveJson=!saveJson">Save file</a>
+  <a class="btn btn-info" href="#" @click="openPrintWord">Print Words</a>
 
   <div id="pasteJson" v-show="pastingArea">
     <textarea placeholder="Paste here" v-model="jsonArea"></textarea>
@@ -35,6 +36,15 @@
     Ctrl+Shift+5 で太字開始&lt;bold&gt;<br>
     Ctrl+Shift+6 で太字終了&lt;/bold&gt;<br>
     キーバインドで太字制御できます。
-    詳しくはhttps://github.com/avgjs/pixi-richtext
+    詳しくはhttps://github.com/avgjs/pixi-richtext<br>
+    現状で、正式に対応しているものは、boldタグのみ。それ以外のものに関しては動作未確認、未実装。
+    他のものは、申し訳ありませんが、wordEditorのリポジトリにPull Request/Issueを立ち上げてください。
+    解答では太字表示にはなりません<br>
+    <br/>
+    Ctrl+Shift+r で問題追加 <br/>
+    <br/>
+    Enter または Ctrl+j を２回押すと次の入力欄へ <br/>
+    <br/>
+    解答追加ボタンで解答を追加できますが、現在のバージョンでは先頭の解答のみが読み込まれ、それ以外は無視される仕様になっていますが、将来の機能更新で２つ目以降も、別解として処理される予定になっていますので、文言の違いなどによる別解があれば入力してください。 <br/>
   </div>
 </div>
