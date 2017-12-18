@@ -70,14 +70,14 @@ module.exports=require("./editor.html")({
               this.doubleTouch=false
             }
             if(e.keyCode==53&&e.ctrlKey&&e.shiftKey){//C-%
-              this.inputs[i].value+="<bold>";
+              this.inputs[i].value+="<b>";
               return
             }
             if(e.keyCode==54&&e.ctrlKey&&e.shiftKey){//C-&
-              this.inputs[i].value+="</bold>";
+              this.inputs[i].value+="</b>";
               return
             }
-            if(e.keyCode==82&&e.ctrlKey&&e.shiftKey){//C-R
+            if(e.keyCode==69&&e.ctrlKey&&e.shiftKey){//C-e
               this.addQuestion()
               return
             }
@@ -101,10 +101,7 @@ module.exports=require("./editor.html")({
   mounted(){
     const parsed = JSON.stringify(localStorage.autoSave)
     if(parsed&&parsed.name){
-      this.json.name=parsed.name
-      this.json.author=parsed.author
-      this.json.description=parsed.description
-      this.json.questions=parsed.questions
+      this.$set(this,"json",parsed)
     }
     this.attachEvt()
   }

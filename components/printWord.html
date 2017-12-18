@@ -5,12 +5,12 @@
   <div class="alert alert-light" role="alert">{{json.description}}</div>
   <table class="table">
     <tr>
-      <th>問題</th>
-      <th>答え</th>
+      <th>単語</th>
+      <th>説明</th>
     </tr>
     <tr v-for="i in indexes">
-      <td v-html="tag(json.questions[i[0]].question)"></td>
       <td v-html="tag(json.questions[i[0]].answer[0])"></td>
+      <td v-html="tag(json.questions[i[0]].question)"></td>
     </tr>
   </table>
 </div>

@@ -22,25 +22,23 @@
   </div>
   <div id="editQuestion">
     <div class="question" v-for="item in json.questions">
-      <div class="questionText">
-        問題文<input type="text" v-model="item.question"/>
-      </div>
       <div class="answers">
-        解答 <span class="answer" v-for="(ans,ind) in item.answer"><input type="text" v-model="item.answer[ind]"/></span><a class="btn btn-primary" href="#" @click="addAnswer(item.answer)">解答を追加</a>
+        単語<span class="answer" v-for="(ans,ind) in item.answer"><input type="text" v-model="item.answer[ind]"/></span><a class="btn btn-primary" href="#" @click="addAnswer(item.answer)">別名を追加</a>
+      </div>
+       <div class="questionText">
+        説明<textarea v-model="item.question"></textarea>
       </div>
     </div>
-    <a class="btn btn-info" href="#" @click="addQuestion">問題追加</a>
+    <a class="btn btn-info" href="#" @click="addQuestion">単語追加</a>
   </div>
   <div class="jumbotron">
-    問題文にて<br>
-    Ctrl+Shift+5 で太字開始&lt;bold&gt;<br>
-    Ctrl+Shift+6 で太字終了&lt;/bold&gt;<br>
+    説明にて<br>
+    Ctrl+Shift+5 で太字開始&lt;b&gt;<br>
+    Ctrl+Shift+6 で太字終了&lt;/b&gt;<br>
     キーバインドで太字制御できます。
-    詳しくはhttps://github.com/avgjs/pixi-richtext<br>
-    現状で、正式に対応しているものは、boldタグのみ。それ以外のものに関しては動作未確認、未実装。
+    現状で、正式に対応しているものは、bタグのみ。それ以外のものに関しては動作未確認、未実装。
     他のものは、申し訳ありませんが、wordEditorのリポジトリにPull Request/Issueを立ち上げてください。
-    解答では太字表示にはなりません<br>
-    <br/>
+        <br/>
     Ctrl+Shift+r で問題追加 <br/>
     <br/>
     Enter または Ctrl+j を２回押すと次の入力欄へ <br/>
