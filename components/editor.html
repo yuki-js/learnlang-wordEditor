@@ -5,7 +5,7 @@
   <a class="btn btn-success" href="#" @click="saveJson=!saveJson">Save file</a>
   <a class="btn btn-info" href="#" @click="openPrintWord">Print Words</a>
 
-  <div id="pasteJson" v-show="pastingArea">
+  <div id="pasteArea" v-show="pastingJson">
     <textarea placeholder="Paste here" v-model="jsonArea"></textarea>
     <a class="btn btn-success" href="#" @click="loadPastedJson">Load</a>
   </div>
